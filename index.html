@@ -1,0 +1,1310 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MarginShift</title>
+
+<style>
+
+/* MarginShift Theme System */
+
+:root {
+color-scheme: light;
+
+--bg: #f4f6fa;
+--surface: #ffffff;
+--text: #202938;
+--muted: #697586;
+--border: #e1e5ec;
+--primary: #263d63;
+--primary-text: #ffffff;
+--success: #16865b;
+--danger: #c13d45;
+}
+
+[data-theme="dark"] {
+color-scheme: dark;
+
+--bg: #101318;
+--surface: #1b2029;
+--text: #f2f4f8;
+--muted: #a4adbb;
+--border: #303744;
+--primary: #5278b5;
+--primary-text: #ffffff;
+--success: #39bd8a;
+--danger: #ed7379;
+}
+
+* {
+box-sizing: border-box;
+}
+
+body {
+margin: 0;
+font-family: Arial, sans-serif;
+background: #f3f5f9;
+color: #222;
+background: var(--bg);
+color: var(--text);
+}
+
+header {
+background: var(--surface);
+color: var(--text);
+border-bottom: 1px solid var(--border);
+height: 65px;
+
+display: flex;
+align-items: center;
+padding: 0 18px;
+gap: 15px;
+box-shadow: 0 2px 8px #00000010;
+position: sticky;
+top: 0;
+z-index: 5;
+}
+
+.menu-btn {
+border: none;
+background: none;
+font-size: 27px;
+cursor: pointer;
+}
+
+header h2 {
+color: #263d63;
+margin: 0;
+}
+
+#sidebar {
+background: var(--surface);
+color: var(--text);
+border-bottom: 1px solid var(--border);
+position: fixed;
+top: 0;
+left: -270px;
+width: 250px;
+height: 100%;
+
+z-index: 10;
+padding: 20px;
+box-shadow: 3px 0 15px #00000015;
+transition: 0.3s;
+}
+
+#sidebar.open {
+left: 0;
+}
+
+#overlay {
+display: none;
+position: fixed;
+inset: 0;
+background: #00000055;
+z-index: 8;
+}
+
+#overlay.show {
+display: block;
+}
+
+.sidebar-title {
+color: #263d63;
+margin-bottom: 25px;
+}
+
+.nav-btn {
+width: 100%;
+padding: 14px;
+margin-bottom: 7px;
+text-align: left;
+border: none;
+background: white;
+border-radius: 9px;
+font-size: 15px;
+cursor: pointer;
+}
+
+.nav-btn.active,
+.nav-btn:active {
+background: #e8eef8;
+color: #263d63;
+font-weight: bold;
+}
+
+main {
+padding: 20px;
+}
+
+.page {
+display: none;
+}
+
+.page.active {
+display: block;
+}
+
+.card {
+background: var(--surface);
+color: var(--text);
+border: 1px solid var(--border);
+padding: 20px;
+margin-top: 15px;
+border-radius: 13px;
+box-shadow: 0 3px 12px #00000008;
+}
+
+.card h3 {
+margin-top: 0;
+color: #555;
+}
+
+.number {
+font-size: 30px;
+font-weight: bold;
+color: #263d63;
+}
+
+.subtitle {
+color: #888;
+font-size: 13px;
+}
+
+h1 {
+color: #263d63;
+}
+
+input {
+width: 100%;
+padding: 13px;
+margin: 7px 0;
+border: 1px solid #ddd;
+border-radius: 8px;
+font-size: 15px;
+background: var(--surface);
+color: var(--text);
+border: 1px solid var(--border);
+}
+
+.card button {
+width: 100%;
+padding: 13px;
+margin-top: 10px;
+background: var(--primary);
+color: var(--primary-text);
+border: none;
+border-radius: 8px;
+font-size: 15px;
+}
+
+.delete-btn {
+background: #b84040 !important;
+}
+
+.
+
+.attendance-actions button {
+flex: 1;
+padding: 12px 5px;
+border: none;
+border-radius: 8px;
+color: white;
+font-size: 14px;
+}
+
+.present-btn {
+background: #278451;
+}
+
+.absent-btn {
+background: #bd4848;
+}
+select,
+textarea {
+width: 100%;
+padding: 13px;
+margin: 7px 0;
+background: var(--surface);
+color: var(--text);
+border: 1px solid var(--border);
+border-radius: 8px;
+font-size: 15px;
+}
+
+.progress-track {
+width: 100%;
+height: 9px;
+background: var(--border);
+border-radius: 20px;
+overflow: hidden;
+margin: 12px 0;
+}
+
+.progress-fill {
+height: 100%;
+width: 0%;
+background: var(--success);
+border-radius: 20px;
+transition: width 0.4s ease;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+<button class="menu-btn" onclick="openMenu()">☰</button>
+<h2>MarginShift</h2>
+</header>
+
+<div id="overlay" onclick="closeMenu()"></div>
+
+<nav id="sidebar">
+<h2 class="sidebar-title">MarginShift</h2>
+
+<button class="nav-btn active" onclick="showPage('home', this)">
+    🏠 Home
+</button>
+
+<button class="nav-btn" onclick="showPage('subjects', this)">
+    📚 Subjects
+</button>
+
+<button class="nav-btn" onclick="showPage('timetable', this)">
+    📅 Timetable
+</button>
+
+<button class="nav-btn" onclick="showPage('calendar', this)">
+    🗓️ Calendar
+</button>
+
+<button class="nav-btn" onclick="showPage('analytics', this)">
+    📊 Analytics
+</button>
+
+<button class="nav-btn" onclick="showPage('settings', this)">
+    ⚙️ Settings
+</button>
+</nav>
+
+<main>
+
+<!-- HOME -->
+
+        
+        <section id="home" class="page active">
+        
+        <h1>My Dashboard</h1>
+        <p class="subtitle">Your attendance at a glance</p>
+        
+        <div class="card">
+        <h3>Overall Attendance</h3>
+        <div class="number" id="overallPercentage">0%</div>
+        <p class="subtitle" id="attendanceDifference">
+        Target Attendance: 75%
+        </p>
+        </div>
+        
+        <div class="progress-track">
+        <div id="overallProgressBar" class="progress-fill"></div>
+        </div>
+        
+        <div class="card">
+        <h3>Total Classes Attended</h3>
+        <div class="number" id="totalAttended">0</div>
+        </div>
+        
+        <div class="card">
+        <h3>Total Classes Conducted</h3>
+        <div class="number" id="totalConducted">0</div>
+        </div>
+        
+        <div class="card">
+        <h3>Attendance Status</h3>
+        <div class="number" id="attendanceStatus">No Data</div>
+        </div>
+        
+        <div class="card">
+        <h3>Semester Overview</h3>
+        
+        <div class="number" id="semesterDays">--</div>
+        
+        <p class="subtitle">
+        Days remaining in semester
+        </p>
+        </div>
+        
+        </section>
+        
+
+
+<!-- SUBJECTS -->
+
+<section id="subjects" class="page">
+
+<h1>My Subjects</h1>
+<p class="subtitle">Manage your subject-wise attendance</p>
+
+<div class="card">
+<h3>Add New Subject</h3>
+
+<input
+type="text"
+id="subjectName"
+placeholder="Enter subject name"
+>
+
+<input
+type="number"
+id="totalClasses"
+placeholder="Total classes conducted"
+min="0"
+>
+
+<input
+type="number"
+id="attendedClasses"
+placeholder="Classes attended"
+min="0"
+>
+
+<button onclick="addSubject()">Add Subject</button>
+</div>
+
+<h2>My Subject List</h2>
+
+<div id="subjectList"></div>
+
+</section>
+
+
+<!-- TIMETABLE -->
+
+<section id="timetable" class="page">
+<h1>My Timetable</h1>
+<p class="subtitle">Manage your weekly class schedule</p>
+
+<div class="card">
+<h3>Add New Class</h3>
+
+<label>Day</label>
+<select id="classDay">
+<option>Monday</option>
+<option>Tuesday</option>
+<option>Wednesday</option>
+<option>Thursday</option>
+<option>Friday</option>
+<option>Saturday</option>
+<option>Sunday</option>
+</select>
+
+<label>Subject</label>
+<input type="text" id="classSubject"
+placeholder="Enter subject name">
+
+<label>Start Time</label>
+<input type="time" id="classStart">
+
+<label>End Time</label>
+<input type="time" id="classEnd">
+
+<button type="button" onclick="addTimetableClass()">Add Class</button>
+
+</div>
+
+<h2>Weekly Schedule</h2>
+<div id="timetableList"></div>
+</section>
+
+
+<!-- CALENDAR -->
+
+<section id="calendar" class="page">
+<h1>Academic Calendar</h1>
+<p class="subtitle">Manage holidays, events and cancelled classes</p>
+
+<div class="card">
+<h3>Add Calendar Event</h3>
+
+<label for="eventDate">Select Date</label>
+<input type="date" id="eventDate">
+
+<label for="eventType">Event Type</label>
+<select id="eventType">
+<option value="Holiday">Holiday</option>
+<option value="College Event">College Event</option>
+<option value="Class Cancelled">Class Cancelled</option>
+<option value="Extra Class">Extra Class</option>
+<option value="Other">Other</option>
+</select>
+
+<label for="eventNote">Event Details</label>
+<input type="text" id="eventNote"
+placeholder="Enter event details">
+
+<button onclick="addCalendarEvent()">Save Event</button>
+</div>
+
+<h2>My Events</h2>
+<div id="calendarEventList"></div>
+</section>
+
+
+<!-- ANALYTICS -->
+
+<section id="analytics" class="page">
+<h1>Attendance Analytics</h1>
+<p class="subtitle">Understand your attendance performance</p>
+
+<div class="card">
+<h3>Attendance Overview</h3>
+<div id="analyticsOverall">0%</div>
+<p id="analyticsTotals">0 / 0 classes attended</p>
+<button onclick="calculateAnalytics()">
+Calculate Attendance
+</button>
+</div>
+
+<h2>Subject-wise Analysis</h2>
+<div id="analyticsResults"></div>
+</section>
+
+
+<!-- SETTINGS -->
+
+<section id="settings" class="page">
+<h1>Settings</h1>
+<p class="subtitle">Customize your MarginShift app</p>
+
+<div class="card">
+<h3>Attendance Target</h3>
+
+<label>Required Attendance (%)</label>
+<input type="number" id="settingTarget"
+min="1" max="99" value="75">
+
+<button onclick="saveMarginSettings()">
+Save Settings
+</button>
+
+<p id="settingsMessage">
+Current target: 75%
+</p>
+</div>
+
+<div class="card">
+<h3>Appearance</h3>
+<p>Choose your preferred app theme</p>
+
+<button id="themeToggleButton" onclick="toggleTheme()">
+Switch to Dark Mode
+</button>
+</div>
+<div class="card">
+<h3>Backup & Restore</h3>
+<p>Keep your MarginShift data safe.</p>
+
+<button onclick="exportBackup()">
+Export Backup
+</button>
+
+<br><br>
+
+<input
+type="file"
+id="backupFile"
+accept=".json,application/json"
+>
+
+<button onclick="importBackup()">
+Import Backup
+</button>
+
+<p id="backupMessage"></p>
+</div>
+<div class="card">
+<h3>About MarginShift</h3>
+<p>Your Personal Attendance Manager</p>
+<p>Version 1.0</p>
+</div>
+</section>
+
+
+</main>
+
+<script>
+
+
+
+// --- MARGINSHIFT GLOBAL VARIABLES (Sabse Top Par Hone Chahiye) ---
+
+
+
+
+
+let card = document.createElement("div");
+
+let marginTarget = JSON.parse(localStorage.getItem("marginShiftTarget")) || 75; // Jo bhi aapka target ho
+
+// MarginShift Theme System
+
+function applyTheme(theme) {
+document.documentElement.setAttribute("data-theme", theme);
+
+let button = document.getElementById("themeToggleButton");
+
+if (button) {
+    button.textContent =
+        theme === "dark"
+        ? "Switch to Light Mode"
+        : "Switch to Dark Mode";
+}
+
+localStorage.setItem("marginShiftTheme", theme);
+}
+
+function toggleTheme() {
+let currentTheme =
+    document.documentElement.getAttribute("data-theme") || "light";
+
+let newTheme = currentTheme === "light" ? "dark" : "light";
+
+applyTheme(newTheme);
+}
+
+// Load saved theme
+let savedTheme = localStorage.getItem("marginShiftTheme") || "light";
+applyTheme(savedTheme);
+
+
+function openMenu() {
+document.getElementById("sidebar").classList.add("open");
+document.getElementById("overlay").classList.add("show");
+}
+
+function closeMenu() {
+document.getElementById("sidebar").classList.remove("open");
+document.getElementById("overlay").classList.remove("show");
+}
+
+function showPage(pageId, button) {
+let pages = document.querySelectorAll('.page');
+pages.forEach(function(page) {
+    page.classList.remove("active");
+});
+
+let targetPage = document.getElementById(pageId);
+if (targetPage) {
+    targetPage.classList.add("active");
+}
+
+let buttons = document.querySelectorAll('.nav-btn');
+buttons.forEach(function(btn) {
+    btn.classList.remove("active");
+});
+
+if (button) {
+    button.classList.add("active");
+}
+
+
+closeMenu();
+if (pageId === 'timetable') {
+displayTimetable();
+}
+
+if (pageId === 'calendar') {
+displayCalendarEvents();
+}
+
+if (pageId === 'settings') {
+displayMarginSettings();
+}
+if (pageId === 'timetable') {
+displayTimetable();
+}
+
+if (pageId === 'calendar') {
+displayCalendarEvents();
+}
+
+// Naye changes yahan hain:
+if (pageId === 'subjects') {
+    displaySubjects();
+}
+
+if (pageId === 'home') {
+    updateDashboard();
+}
+}
+
+let subjects = JSON.parse(
+localStorage.getItem("marginShiftSubjects") || "[]"
+);
+
+function saveSubjects() {
+localStorage.setItem(
+    "marginShiftSubjects",
+    JSON.stringify(subjects)
+);
+}
+
+function addSubject() {
+
+let name = document.getElementById("subjectName").value.trim();
+
+let total = Number(document.getElementById("totalClasses").value);
+
+let attended = Number(document.getElementById("attendedClasses").value);
+
+if (name === "" || document.getElementById("totalClasses").value === "" ||
+    document.getElementById("attendedClasses").value === "") {
+    alert("Please fill all fields");
+    return;
+}
+
+if (!Number.isInteger(total) || !Number.isInteger(attended) ||
+    total < 0 || attended < 0 || attended > total || total === 0) {
+    alert("Please enter valid class numbers");
+    return;
+}
+
+subjects.push({
+    name: name,
+    total: total,
+    attended: attended
+});
+
+saveSubjects();
+displaySubjects();
+
+document.getElementById("subjectName").value = "";
+document.getElementById("totalClasses").value = "";
+document.getElementById("attendedClasses").value = "";
+}
+
+function displaySubjects() {
+let list = document.getElementById("subjectList");
+if (!list) return;
+list.innerHTML = "";
+
+if (subjects.length === 0) {
+    list.textContent = "No subjects added yet.";
+    return;
+}
+
+subjects.forEach(function(subject, index) {
+    let card = document.createElement("div");
+    card.className = "subject-card";
+
+    let name = document.createElement("h3");
+    name.textContent = subject.name;
+
+    let details = document.createElement("p");
+    details.textContent = "Attended: " + subject.attended + " / " + subject.total;
+
+    let result = document.createElement("p");
+    let percentage = subject.total === 0 ? 0 : ((subject.attended / subject.total) * 100).toFixed(1);
+    result.textContent = "Attendance: " + percentage + "%";
+    
+    let progressTrack = document.createElement("div");
+    progressTrack.className = "progress-track";
+    
+    let progressFill = document.createElement("div");
+    progressFill.className = "progress-fill";
+    
+    progressFill.style.width = Math.min(percentage, 100) + "%";
+    
+    progressTrack.appendChild(progressFill);
+    
+    // Calculate safe absences
+    let target = Number(
+    localStorage.getItem("marginShiftTarget") || 75
+    );
+    
+    let safeAbsences = Math.max(
+    0,
+    Math.floor(
+    subject.attended / (target / 100) -
+    subject.total + 0.0000001
+    )
+    );
+    
+    let safeInfo = document.createElement("p");
+    if (percentage >= target) {
+    safeInfo.textContent =
+    "You can miss " + safeAbsences +
+    " more class(es) and stay at target. " +
+    "After that, the next absence will drop below target.";
+    } else {
+    safeInfo.textContent =
+    "Below target — attendance needs improvement";
+    }
+    let presentButton = document.createElement("button");
+    presentButton.textContent = "Present";
+    presentButton.className = "present-btn";
+    presentButton.onclick = function() {
+    updateAttendance(index, "present");
+    };
+    
+    let absentButton = document.createElement("button");
+    absentButton.textContent = "Absent";
+    absentButton.className = "absent-btn";
+    absentButton.onclick = function() {
+    updateAttendance(index, "absent");
+    };
+    
+    let deleteButton = document.createElement("button");
+    deleteButton.textContent = "Delete";
+    deleteButton.className = "delete-btn";
+    deleteButton.onclick = function() {
+        subjects.splice(index, 1);
+        saveSubjects();
+        displaySubjects();
+    };
+    card.appendChild(name);
+    card.appendChild(details);
+    card.appendChild(result);
+    card.appendChild(progressTrack);
+    card.appendChild(safeInfo);
+    card.appendChild(presentButton);
+    card.appendChild(absentButton);
+    card.appendChild(deleteButton);
+
+    list.appendChild(card);
+});
+}     
+  function updateAttendance(index, status) { 
+  subjects[index].total++;   
+  if (status === "present") {
+  subjects[index].attended++;
+  }    
+  saveSubjects();
+  displaySubjects();
+  }  
+//displaySubjects();
+
+
+let calendarEvents = JSON.parse(
+localStorage.getItem("marginShiftEvents") || "[]"
+);
+
+function saveCalendarEvents() {
+localStorage.setItem(
+    "marginShiftEvents",
+    JSON.stringify(calendarEvents)
+);
+}
+
+function addCalendarEvent() {
+let date = document.getElementById("eventDate").value;
+let type = document.getElementById("eventType").value;
+let note = document.getElementById("eventNote").value.trim();
+
+if (date === "") {
+    alert("Please select a date");
+    return;
+}
+
+calendarEvents.push({
+    date: date,
+    type: type,
+    note: note
+});
+
+saveCalendarEvents();
+displayCalendarEvents();
+
+document.getElementById("eventNote").value = "";
+}
+
+function displayCalendarEvents() {
+let list = document.getElementById("calendarEventList");
+list.innerHTML = "";
+
+if (calendarEvents.length === 0) {
+    list.textContent = "No events added yet.";
+    return;
+}
+
+let sortedEvents = [...calendarEvents].sort(
+    (a, b) => a.date.localeCompare(b.date)
+);
+
+sortedEvents.forEach(function(event) {
+    let card = document.createElement("div");
+    card.className = "subject-card";
+
+    let heading = document.createElement("h3");
+    heading.textContent = event.type;
+
+    let date = document.createElement("p");
+    date.textContent = event.date;
+
+    let note = document.createElement("p");
+    note.textContent = event.note || "No additional details";
+
+    let deleteButton = document.createElement("button");
+    deleteButton.textContent = "Delete Event";
+    deleteButton.className = "delete-btn";
+
+    deleteButton.onclick = function() {
+        let index = calendarEvents.indexOf(event);
+        calendarEvents.splice(index, 1);
+        saveCalendarEvents();
+        displayCalendarEvents();
+    };
+
+    card.appendChild(heading);
+    card.appendChild(date);
+    card.appendChild(note);
+    card.appendChild(deleteButton);
+
+    list.appendChild(card);
+});
+}
+
+displayCalendarEvents();
+
+
+/* =========================
+SETTINGS
+========================= */
+
+let marginShiftTarget = Number(
+localStorage.getItem("marginShiftTarget") || 75
+);
+
+function saveMarginSettings() {
+let target = Number(
+    document.getElementById("settingTarget").value
+);
+
+if (!Number.isFinite(target) ||
+    target < 1 || target > 99) {
+    alert("Enter a target between 1 and 99.");
+    return;
+}
+
+marginShiftTarget = target;
+
+localStorage.setItem(
+    "marginShiftTarget",
+    String(target)
+);
+
+document.getElementById("settingsMessage").textContent =
+    "Current target: " + target + "%";
+
+alert("Settings saved!");
+}
+
+function displayMarginSettings() {
+document.getElementById("settingTarget").value =
+    marginShiftTarget;
+
+document.getElementById("settingsMessage").textContent =
+    "Current target: " + marginShiftTarget + "%";
+}
+
+
+/* =========================
+TIMETABLE
+========================= */
+
+let timetableClasses = JSON.parse(
+localStorage.getItem("marginShiftTimetable") || "[]"
+);
+
+function saveTimetable() {
+localStorage.setItem(
+    "marginShiftTimetable",
+    JSON.stringify(timetableClasses)
+);
+}
+function addTimetableClass() {
+let day = document.getElementById("classDay").value;
+let subject = document.getElementById("classSubject").value.trim();
+let start = document.getElementById("classStart").value;
+let end = document.getElementById("classEnd").value;
+
+// Check 1: Kya sabhi fields mil rahi hain?
+alert("Values: " + day + " | " + subject + " | " + start + " | " + end);
+
+if (!subject || !start || !end) {
+    alert("Please fill all fields error!");
+    return;
+}
+
+if (start >= end) {
+    alert("End time validation error! Start time bada ya barabar hai.");
+    return;
+}
+
+// Agar yahan tak sab theek hai toh yahan alert aana chahiye:
+alert("Validation pass ho gayi, ab push hoga!");
+
+timetableClasses.push({
+    day: day,
+    subject: subject,
+    start: start,
+    end: end
+});
+
+saveTimetable();
+displayTimetable();
+
+// Input fields ko khali karna
+document.getElementById("classSubject").value = "";
+document.getElementById("classStart").value = "";
+document.getElementById("classEnd").value = "";
+}
+
+function displayTimetable() {
+try {
+    let list = document.getElementById("timetableList");
+    if (!list) {
+        alert("Error: timetableList element nahi mila HTML mein!");
+        return;
+    }
+    list.innerHTML = "";
+
+    if (!timetableClasses || timetableClasses.length === 0) {
+        list.textContent = "No classes added yet.";
+        return;
+    }
+
+    let days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+    let sorted = [...timetableClasses].sort(function(a, b) {
+        let dayDifference = days.indexOf(a.day) - days.indexOf(b.day);
+        return dayDifference || a.start.localeCompare(b.start);
+    });
+
+    sorted.forEach(function(item) {
+        let card = document.createElement("div");
+        card.className = "subject-card";
+
+        let heading = document.createElement("h3");
+        heading.textContent = item.day;
+
+        let subject = document.createElement("p");
+        subject.textContent = item.subject;
+
+        let time = document.createElement("p");
+        time.textContent = item.start + " - " + item.end;
+
+        let remove = document.createElement("button");
+        remove.textContent = "Delete Class";
+        remove.className = "delete-btn";
+
+        remove.onclick = function() {
+            let index = timetableClasses.indexOf(item);
+            timetableClasses.splice(index, 1);
+            saveTimetable();
+            displayTimetable();
+        };
+
+        card.appendChild(heading);
+        card.appendChild(subject);
+        card.appendChild(time);
+        card.appendChild(remove);
+
+        list.appendChild(card);
+    });
+
+    updateDashboard();
+} catch (err) {
+    alert("Display Error: " + err.message);
+}
+}
+
+
+
+/* =========================
+ANALYTICS
+========================= */
+
+function calculateAnalytics() {
+let totalAttended = 0;
+let totalConducted = 0;
+
+let results = document.getElementById("analyticsResults");
+results.innerHTML = "";
+
+subjects.forEach(function(subject) {
+    totalAttended += Number(subject.attended);
+    totalConducted += Number(subject.total);
+});
+
+let overall = totalConducted > 0
+    ? (totalAttended / totalConducted) * 100
+    : 0;
+
+document.getElementById("analyticsOverall").textContent =
+    overall.toFixed(2) + "%";
+
+document.getElementById("analyticsTotals").textContent =
+    totalAttended + " / " + totalConducted +
+    " classes attended";
+
+if (subjects.length === 0) {
+    results.textContent = "Add subjects first.";
+    return;
+}
+
+let rate = marginShiftTarget / 100;
+
+subjects.forEach(function(subject) {
+    let attended = Number(subject.attended);
+    let total = Number(subject.total);
+
+    if (total <= 0) return;
+
+    let percentage = attended / total * 100;
+
+    let needed = Math.max(
+        0,
+        Math.ceil(
+            (rate * total - attended) / (1 - rate) - 1e-10
+        )
+    );
+
+    let safeAbsences = Math.max(
+        0,
+        Math.floor(attended / rate - total + 1e-10)
+    );
+
+    let card = document.createElement("div");
+    card.className = "card";
+
+    let heading = document.createElement("h3");
+    heading.textContent = subject.name;
+
+    let current = document.createElement("p");
+    current.textContent =
+        "Attendance: " + percentage.toFixed(2) + "%";
+
+    let required = document.createElement("p");
+    required.textContent =
+        "Classes to attend to reach target: " + needed;
+
+    let absences = document.createElement("p");
+    absences.textContent =
+        "Possible consecutive absences: " +
+        (percentage >= marginShiftTarget ? safeAbsences : 0);
+
+    let status = document.createElement("p");
+    status.textContent =
+        percentage >= marginShiftTarget
+        ? "Target achieved"
+        : "Below target";
+
+    card.appendChild(heading);
+    card.appendChild(current);
+    card.appendChild(required);
+    card.appendChild(absences);
+    card.appendChild(status);
+
+    results.appendChild(card);
+});
+}
+
+
+/* =========================
+INITIAL DISPLAY
+========================= */
+
+displayTimetable();
+displayMarginSettings();
+
+
+
+function updateDashboard() {
+// 1. Fetch saved subjects from localStorage
+let subjects = JSON.parse(localStorage.getItem('marginShiftSubjects')) || [];
+
+let totalAttended = 0;
+let totalConducted = 0;
+
+// 2. Loop through all subjects to sum up classes
+subjects.forEach(subject => {
+totalAttended += Number(subject.attended) || 0;
+totalConducted += Number(subject.total) || 0;
+});
+
+// 3. Calculate overall percentage
+let overallPercentage = totalConducted > 0 ? ((totalAttended / totalConducted) * 100).toFixed(1) : 0;
+let percentage = overallPercentage;
+let progressBar = document.getElementById("overallProgressBar");
+
+if (progressBar) {
+progressBar.style.width = Math.min(percentage, 100) + "%";
+}
+// 4. Get target attendance (default to 75 if not set)
+let target = parseFloat(localStorage.getItem('marginShiftTarget')) || 75;
+
+// 5. Update the HTML elements safely
+let pctEl = document.getElementById('overallPercentage');
+let attendedEl = document.getElementById('totalAttended');
+let conductedEl = document.getElementById('totalConducted');
+let statusEl = document.getElementById('attendanceStatus');
+let diffEl = document.getElementById('attendanceDifference');
+
+if (pctEl) pctEl.innerText = overallPercentage + '%';
+if (attendedEl) attendedEl.innerText = totalAttended;
+if (conductedEl) conductedEl.innerText = totalConducted;
+
+if (statusEl) {
+if (overallPercentage >= target) {
+statusEl.innerText = "On Track (Safe)";
+} else {
+statusEl.innerText = "Attendance Shortage";
+}
+}
+
+if (diffEl) {
+let diff = (overallPercentage - target).toFixed(1);
+if (diff >= 0) {
+diffEl.innerText = `+${diff}% above target`;
+} else {
+diffEl.innerText = `${Math.abs(diff)}% below target`;
+}
+}
+}
+
+window.onload = function() {
+displaySubjects();
+displayTimetable();
+displayCalendarEvents();
+displayMarginSettings();
+updateDashboard(); // <--- Add this here if it's missing
+};
+
+function exportBackup() {
+let backupData = {};
+
+// Collect all MarginShift data
+for (let i = 0; i < localStorage.length; i++) {
+    let key = localStorage.key(i);
+
+    if (key && key.startsWith("marginShift")) {
+        backupData[key] = localStorage.getItem(key);
+    }
+}
+
+let backup = {
+    appName: "MarginShift",
+    version: "1.0",
+    backupDate: new Date().toISOString(),
+    data: backupData
+};
+
+let file = new Blob(
+    [JSON.stringify(backup, null, 2)],
+    { type: "application/json" }
+);
+
+let url = URL.createObjectURL(file);
+
+let link = document.createElement("a");
+link.href = url;
+let now = new Date();
+
+let date = now.toISOString()
+.replace(/:/g, "-")
+.slice(0, 19);
+
+link.download = "MarginShift_Backup_" + date + ".json";
+
+document.body.appendChild(link);
+link.click();
+document.body.removeChild(link);
+
+URL.revokeObjectURL(url);
+
+document.getElementById("backupMessage").textContent =
+    "Backup exported successfully!";
+}
+function importBackup() {
+let fileInput = document.getElementById("backupFile");
+let message = document.getElementById("backupMessage");
+let file = fileInput.files[0];
+
+if (!file) {
+    message.textContent = "Please select a backup file.";
+    return;
+}
+
+let reader = new FileReader();
+
+reader.onload = function(event) {
+    try {
+        let backup = JSON.parse(event.target.result);
+
+        if (
+            backup.appName !== "MarginShift" ||
+            !backup.data ||
+            typeof backup.data !== "object" ||
+            Array.isArray(backup.data)
+        ) {
+            throw new Error("Invalid backup file");
+        }
+
+        let keys = Object.keys(backup.data);
+
+        if (keys.some(key =>
+            !key.startsWith("marginShift") ||
+            typeof backup.data[key] !== "string"
+        )) {
+            throw new Error("Invalid backup data");
+        }
+
+        if (keys.length === 0) {
+            throw new Error("Backup contains no data");
+        }
+
+        let confirmed = confirm(
+            "This will replace your current MarginShift data. Continue?"
+        );
+
+        if (!confirmed) return;
+
+        // Remove existing MarginShift data
+        let oldKeys = [];
+
+        for (let i = 0; i < localStorage.length; i++) {
+            let key = localStorage.key(i);
+            if (key && key.startsWith("marginShift")) {
+                oldKeys.push(key);
+            }
+        }
+
+        oldKeys.forEach(key => localStorage.removeItem(key));
+
+        // Restore backup data
+        keys.forEach(key => {
+            localStorage.setItem(key, backup.data[key]);
+        });
+
+        message.textContent = "Backup restored successfully!";
+
+        location.reload();
+
+    } catch (error) {
+        message.textContent =
+            "Invalid backup file. No data was restored.";
+    }
+};
+
+reader.readAsText(file);
+}
+
+</script>
+
+</body>
+</html>
